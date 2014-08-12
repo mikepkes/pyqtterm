@@ -1,0 +1,9 @@
+Go here
+
+http://sphinx-doc.org/tutorial.html
+
+And follow the instructions to start a basic Sphinx documentation structure
+here.
+
+Later, you can use git-hooks to have readthedocs.org etc do CI style builds of
+the docs.

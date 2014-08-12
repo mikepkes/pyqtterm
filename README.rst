@@ -13,7 +13,7 @@ Description of project
 Installation
 ------------
 
-How do you installt his thing again?
+How do you install this thing again?
 ::
     code
     code
