@@ -1,5 +1,7 @@
 #!/usr/bin/python
 
+import ast
+import sys
 import traceback
 import math
 import keyword as pythonkeyword
@@ -73,9 +75,14 @@ class QtTermEntryLineNumberWidget(QtGui.QWidget):
         self._editor.lineNumberAreaPaintEvent(event)
 
 class QtTermEntryWidget(QtGui.QPlainTextEdit):
+
+    traceback = QtCore.Signal(int)
+    syntaxError = QtCore.Signal(int)
+
     def __init__(self, parent=None):
         super(QtTermEntryWidget, self).__init__(parent)
 
+        self._termWidget = parent
         font = QtGui.QFont("Monaco")
         font.setStyleHint(font.TypeWriter, font.PreferDefault)
         self.setFont(font)
@@ -95,12 +102,39 @@ class QtTermEntryWidget(QtGui.QPlainTextEdit):
         self.executeAction.triggered.connect(self.execute)
         self.addAction(self.executeAction)
 
+        self.syntaxError.connect(self.displaySyntaxError)
+
+    def displaySyntaxError(self, line):
+
+        sel = QtGui.QTextEdit.ExtraSelection()
+        lineColor = QtGui.QColor(QtCore.Qt.red).lighter(150)
+        sel.format.setBackground(QtGui.QBrush(lineColor,QtCore.Qt.SolidPattern))
+        sel.format.setProperty(QtGui.QTextFormat.FullWidthSelection, True)
+        sel.cursor = QtGui.QTextCursor(self.document())
+        sel.cursor.movePosition(sel.cursor.NextBlock, QtGui.QTextCursor.MoveAnchor, line-1)
+        sel.cursor.clearSelection()
+        extraSelections = [sel]
+
+        self.setExtraSelections(extraSelections)
+
     def execute(self):
         script = self.toPlainText()
+
+        try:
+            script_code = compile(script, '<interactive interpreter>', 'exec')
+        except (SyntaxError) as e:
+            self.syntaxError.emit(e.lineno)
+            return
+
         try:
             exec(script)
-        except Exception:
-            print traceback.format_exc()
+        except (StandardError) as e: #Which error should this be?
+            type_, value_, traceback_ = sys.exc_info()
+            tb = traceback.extract_tb(traceback_)
+            index = self._termWidget.storeTraceback(tb)
+            self.traceback.emit(index)
+            print e
+
 
     def lineNumberAreaPaintEvent(self, event):
         painter = QtGui.QPainter(self._lineNumber)
@@ -166,6 +200,9 @@ class QtTermResultsWidget(QtGui.QTextBrowser):
     def handleLink(self, url):
         print url
 
+    def handleTraceback(self, index):
+        print index
+
 class QtTermWidget(QtGui.QWidget):
     def __init__(self, parent=None):
         super(QtTermWidget, self).__init__(parent)
@@ -182,8 +219,15 @@ class QtTermWidget(QtGui.QWidget):
 
         self.setLayout(layout)
 
+        self._tracebacks = []
 
-        self._results.insertHtml("<a href='http://www.google.com'>Go to Google</a>")
+        self._entry.traceback.connect(self._results.handleTraceback)
+
+
+    def storeTraceback(self, tb):
+        self._tracebacks.append(tb)
+        print tb
+        return len(self._tracebacks)-1
 
 def main():
     import sys
