@@ -8,6 +8,22 @@ This is a generic as possible setup.py template. The goal is to retrieve almost
 all of the information from the main module file, rather than relying on values
 explicitly entered here.
 
+## Building the Repo
+
+1. Build Sphinx Documentation
+python setup.py build_sphinx
+2. Copy the html docs the docs_html folder
+cp -R docs/_build/html/ ./docs_html/
+3. Build normal dist and wheel dist
+python setup.py sdist
+python setup.py bdist_wheel
+4. Check the built dists to make sure they are correct
+5. Upload
+python setup.py sdist bdist_wheel upload
+
+Note that the last step should really use `twine`. I'll get you instructions for
+that later.
+
 ## Usage
 
 This setup.py script needs to modified in the following ways:
@@ -19,6 +35,7 @@ This setup.py script needs to modified in the following ways:
     - `keywords` needs to be modified to suit your project.
 - If you have files that need to be included (such as `LICENSE`, you need to
     create a MANIFEST.in file and `include FILENAME` them.
+- Add any requires to `install_requires`
 - If you have console scripts that need to be linked to, add them under
     `entry points`.
 
@@ -212,6 +229,10 @@ setup(
     # You can just specify the packages manually here if your project is
     # simple. Or you can use find_packages.
     packages=find_packages(exclude=['tests']),
+
+    # List run-time dependencies here. These will be installed by pip when your
+    # project is installed.
+    install_requires=['PySide'],
 
     # If there are data files included in your packages that need to be
     # installed, specify them here.  If using Python 2.6 or less, then these
