@@ -1,0 +1,5 @@
+Place license here. Since you're dynamically linking to PySide, which is
+licensed under LGPL, you can pretty much use any license you want. You're not
+distributing PySide with the project, not are you obfuscating the API to PySide.
+
+http://choosealicense.com/
