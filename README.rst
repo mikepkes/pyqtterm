@@ -1,19 +1,33 @@
-README placeholder.
-
-This is a restructured text file, because I'm assuming you want to distribute
-this project on the Python Package Index, and that will require reStructured
-text for the long description, which you'll be using this README for (see
-setup.py).
-
 PyQtTerm
 ================
 
 PyQtTerm is a python-based qt widget providing basic python editing and execution.
 
+Motivation
+----------
+PyQtTerm was started to allow for an easy way to integrate a python terminal in applications
+that already provide a python interpreter but no interactive console/terminal.
+
+Existing Functionality
+----------------------
+Live Terminal Execution
+Basic Syntax Highlighting
+Current Line Highlighting
+Line Numbering
+Syntax Error Line Highlighting
+Traceback Hyperlinks (with hover-over detail)
+
+Planned Functionality
+---------------------
+Stacktrace Browser
+Better Syntax Markup
+Verbose Syntax Error Popover
+Source File Loading
+History Restore
+
 Installation
 ------------
 
-How do you install this thing again?
 ::
     python setup.py build
     python setup.py install
@@ -21,12 +35,16 @@ How do you install this thing again?
 Usage
 -----
 
-Some usage examples
-
-Other stuff
------------
+::
+    from PySide import QtGui
+    import qtterm
+    import sys
+    app = QtGui.QApplication(sys.argv)
+    w = qtterm.QtTermWidget()
+    w.show()
+    app.exec_()
 
 License
 -------
 
-Provided under the MIT License.
+Provided under the Simplified BSD License
