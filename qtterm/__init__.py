@@ -46,7 +46,7 @@ __maintainer_email__ = "mike@toadgrass.com"
 __module_name__ = "qtterm"
 __short_desc__ = "A QT simple python-qt based python terminal"
 __status__ = "Planning"
-__url__ = 'http://www.github.com/michaelkessler/pyqtterm'
+__url__ = 'http://www.github.com/mikepkes/pyqtterm'
 
 try:
     from PySide import QtCore, QtGui
