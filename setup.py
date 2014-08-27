@@ -146,7 +146,7 @@ setup(
     long_description=LONG_DESCRIPTION,
 
     # The project URL.
-    url=metadata.get('url', 'http://www.github.com/michaelkessler/pyqtterm'),
+    url=metadata.get('url', 'http://www.github.com/mikepkes/pyqtterm'),
 
     # Author & Maintainer details
     author=metadata.get('author', 'Michael Kessler'),
