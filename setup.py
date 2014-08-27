@@ -182,16 +182,16 @@ setup(
     long_description=LONG_DESCRIPTION,
 
     # The project URL.
-    url=metadata.get('url', ''),
+    url=metadata.get('url', 'http://www.github.com/michaelkessler/pyqtterm'),
 
     # Author & Maintainer details
-    author=metadata.get('author', ''),
-    author_email=metadata.get('author_email', ''),
-    maintainer=metadata.get('maintainer', ''),
-    maintainer_email=metadata.get('maintainer_email', ''),
+    author=metadata.get('author', 'Michael Kessler'),
+    author_email=metadata.get('author_email', 'mike@toadgrass.com'),
+    maintainer=metadata.get('maintainer', 'Michael Kessler'),
+    maintainer_email=metadata.get('maintainer_email', 'mike@toadgrass.com'),
 
     # Choose your license
-    license=metadata.get('license', ''),
+    license=metadata.get('license', 'MIT'),
 
     classifiers=[
         # How mature is this project? Common values are
@@ -201,10 +201,7 @@ setup(
         'Development Status :: 1 - Planning',
 
         # Indicate who your project is intended for
-        'Intended Audience :: End Users/Desktop',
         'Intended Audience :: Developers',
-        'Topic :: Multimedia :: Graphics',
-        'Topic :: Multimedia :: Video',
         'Topic :: Software Development :: Libraries :: Python Modules',
 
         # Pick your license as you wish (should match "license" above)
@@ -224,7 +221,7 @@ setup(
     ],
 
     # What does your project relate to?
-    keywords='film tv color vfx nuke',
+    keywords='qt terminal',
 
     # You can just specify the packages manually here if your project is
     # simple. Or you can use find_packages.

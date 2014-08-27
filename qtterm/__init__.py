@@ -7,6 +7,29 @@ import math
 import keyword as pythonkeyword
 import __builtin__
 
+# Note that the below isn't a standard, but my own personal idiocy. It's not
+# even a PEP, and the current PEPs don't look anything like this.
+#
+# That's because they haven't thought about it, and I haven't bothered to PEP
+# it.
+#
+# Fill out the details. I suspect you might need to replace the copyright.
+#
+# `__status__` is a classifier from PyPi: https://pypi.python.org/pypi?%3Aaction=list_classifiers
+
+__author__ = "Michael Kessler"
+__author_email__ = "xxx"
+__copyright__ = "Copyright 2014, Michael Kessler"
+__credits__ = ["Michael Kessler"]
+__license__ = "xxx"
+__version__ = "0.1"
+__maintainer__ = "Michael Kessler"
+__maintainer_email__ = "xxx"
+__module_name__ = "qtterm"
+__short_desc__ = "A QT powered python terminal with powerful stack trace"
+__status__ = "Planning"
+__url__ = 'xxx'
+
 try:
     from PySide import QtCore, QtGui
 except ImportError:

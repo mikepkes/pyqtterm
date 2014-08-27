@@ -56,3 +56,6 @@ docs/_templates
 
 # PyCharm
 .idea/
+
+# Vim Swap Files
+*.swp
