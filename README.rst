@@ -15,9 +15,8 @@ Installation
 
 How do you install this thing again?
 ::
-    code
-    code
-    code
+    python setup.py build
+    python setup.py install
 
 Usage
 -----
