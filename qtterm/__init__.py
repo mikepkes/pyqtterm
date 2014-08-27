@@ -1,39 +1,91 @@
 #!/usr/bin/python
 
+"""
+Copyright (c) 2014, Michael Kessler
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice, this
+  list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+"""
+
 import ast
 import sys
 import traceback
 import math
 import keyword as pythonkeyword
 import __builtin__
-
-# Note that the below isn't a standard, but my own personal idiocy. It's not
-# even a PEP, and the current PEPs don't look anything like this.
-#
-# That's because they haven't thought about it, and I haven't bothered to PEP
-# it.
-#
-# Fill out the details. I suspect you might need to replace the copyright.
-#
-# `__status__` is a classifier from PyPi: https://pypi.python.org/pypi?%3Aaction=list_classifiers
+from threading import Lock
 
 __author__ = "Michael Kessler"
-__author_email__ = "xxx"
+__author_email__ = "mike@toadgrass.com"
 __copyright__ = "Copyright 2014, Michael Kessler"
 __credits__ = ["Michael Kessler"]
-__license__ = "xxx"
+__license__ = "Simplified BSD"
 __version__ = "0.1"
 __maintainer__ = "Michael Kessler"
-__maintainer_email__ = "xxx"
+__maintainer_email__ = "mike@toadgrass.com"
 __module_name__ = "qtterm"
-__short_desc__ = "A QT powered python terminal with powerful stack trace"
+__short_desc__ = "A QT simple python-qt based python terminal"
 __status__ = "Planning"
-__url__ = 'xxx'
+__url__ = 'http://www.github.com/michaelkessler/pyqtterm'
 
 try:
     from PySide import QtCore, QtGui
 except ImportError:
     from PyQt4 import QtCore, QtGui
+
+# From http://blog.client9.com/2008/10/04/escaping-html-in-python.html
+# This is really really ugly.
+def html_escape(text):
+    text = text.replace('&', '&amp;')
+    text = text.replace('"', '&quot;')
+    text = text.replace("'", '&#39;')
+    text = text.replace(">", '&gt;')
+    text = text.replace("<", '&lt;')
+    return text
+
+class OutputRedirect(QtCore.QObject):
+
+    output = QtCore.Signal(str)
+
+    def __init__(self, tee=True, parent=None):
+        super(OutputRedirect, self).__init__(parent)
+        self._handle = None
+        self._tee = tee
+
+    def __enter__(self):
+        self._handle = sys.stdout
+        sys.stdout = self
+        return self
+
+    def __exit__(self, type, value, traceback):
+        sys.stdout = self._handle
+        
+
+    def write(self, msg):
+        self.output.emit(msg)
+        if self._tee:
+            self._handle.write(msg)
+        
 
 class HighlightRule(object):
     def __init__(self, pattern, format):
@@ -45,7 +97,6 @@ class PythonHighlighter(QtGui.QSyntaxHighlighter):
         super(PythonHighlighter, self).__init__(parent)
         self.rules = []
 
-
         brush = QtGui.QBrush(QtCore.Qt.darkGreen, QtCore.Qt.SolidPattern)
         builtin = QtGui.QTextCharFormat()
         builtin.setForeground(brush)
@@ -56,7 +107,6 @@ class PythonHighlighter(QtGui.QSyntaxHighlighter):
             pattern = QtCore.QRegExp("\\b{w}\\b".format(w=word))
             rule = HighlightRule(pattern, builtin)
             self.rules.append(rule)
-
 
         brush = QtGui.QBrush( QtCore.Qt.darkBlue, QtCore.Qt.SolidPattern)
         keyword = QtGui.QTextCharFormat()
@@ -127,6 +177,10 @@ class QtTermEntryWidget(QtGui.QPlainTextEdit):
 
         self.syntaxError.connect(self.displaySyntaxError)
 
+        self.stdoutRedirect = OutputRedirect()
+
+        self._locals = {}
+
     def displaySyntaxError(self, line):
 
         sel = QtGui.QTextEdit.ExtraSelection()
@@ -148,15 +202,15 @@ class QtTermEntryWidget(QtGui.QPlainTextEdit):
         except (SyntaxError) as e:
             self.syntaxError.emit(e.lineno)
             return
+        with self.stdoutRedirect:
+            try:
+                exec(script_code, globals(), self._locals)
+            except (StandardError) as e: #Which error should this be?
+                type_, value_, traceback_ = sys.exc_info()
+                tb = traceback.extract_tb(traceback_)
 
-        try:
-            exec(script)
-        except (StandardError) as e: #Which error should this be?
-            type_, value_, traceback_ = sys.exc_info()
-            tb = traceback.extract_tb(traceback_)
-            index = self._termWidget.storeTraceback(tb)
-            self.traceback.emit(index)
-            print e
+                index = self._termWidget.storeTraceback(tb)
+                self.traceback.emit(index)
 
 
     def lineNumberAreaPaintEvent(self, event):
@@ -219,12 +273,37 @@ class QtTermResultsWidget(QtGui.QTextBrowser):
         super(QtTermResultsWidget, self).__init__(parent)
         self.setOpenLinks(False)
         self.anchorClicked.connect(self.handleLink)
+        cursor = self.textCursor()
+        self.setReadOnly(True)
+
+        self._termWidget = parent
+
+        self.writeLock = Lock()
 
     def handleLink(self, url):
-        print url
+        pass
+        #TODO: Implement some sort of traceback display.
+
+    def handleOutput(self, text):
+        with self.writeLock:
+            self.moveCursor(QtGui.QTextCursor.End)
+            self.insertPlainText(text)
 
     def handleTraceback(self, index):
-        print index
+        with self.writeLock:
+            tb = self._termWidget.traceback(index)
+            self.moveCursor(QtGui.QTextCursor.End)
+
+            linkName = "Error: {path}".format(path=traceback.format_list(tb)[-1])
+            hoverText = ' '.join(traceback.format_list(tb))
+            # For some reason the </a> doesn't get closed unless we have something after it, hence the space.
+            self.insertHtml("""<a href='traceback:///{index}' title='{hoverText}'>{linkName} </a>&nbsp""".format(
+                    linkName=linkName,
+                    index=index,
+                    hoverText=hoverText,
+                )
+            )
+            self.insertPlainText("\n")
 
 class QtTermWidget(QtGui.QWidget):
     def __init__(self, parent=None):
@@ -246,10 +325,14 @@ class QtTermWidget(QtGui.QWidget):
 
         self._entry.traceback.connect(self._results.handleTraceback)
 
+        self._entry.stdoutRedirect.output.connect(self._results.handleOutput)
+
+    def traceback(self, index):
+        return self._tracebacks[index]
+
 
     def storeTraceback(self, tb):
         self._tracebacks.append(tb)
-        print tb
         return len(self._tracebacks)-1
 
 def main():

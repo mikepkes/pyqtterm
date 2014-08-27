@@ -1,67 +1,31 @@
 #!/usr/bin/env python
 """
+Copyright (c) 2014, Michael Kessler
+All rights reserved.
 
-setup.py
-========
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
 
-This is a generic as possible setup.py template. The goal is to retrieve almost
-all of the information from the main module file, rather than relying on values
-explicitly entered here.
+* Redistributions of source code must retain the above copyright notice, this
+  list of conditions and the following disclaimer.
 
-## Building the Repo
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
 
-1. Build Sphinx Documentation
-python setup.py build_sphinx
-2. Copy the html docs the docs_html folder
-cp -R docs/_build/html/ ./docs_html/
-3. Build normal dist and wheel dist
-python setup.py sdist
-python setup.py bdist_wheel
-4. Check the built dists to make sure they are correct
-5. Upload
-python setup.py sdist bdist_wheel upload
-
-Note that the last step should really use `twine`. I'll get you instructions for
-that later.
-
-## Usage
-
-This setup.py script needs to modified in the following ways:
-
-- `MAIN_FILE` needs to be pointed at the main metadata file, this can be done
-    easily by modifyng the second arg.
-- `setup` kwargs need to be modified:
-    - `classifiers` needs to be modified to suit your project.
-    - `keywords` needs to be modified to suit your project.
-- If you have files that need to be included (such as `LICENSE`, you need to
-    create a MANIFEST.in file and `include FILENAME` them.
-- Add any requires to `install_requires`
-- If you have console scripts that need to be linked to, add them under
-    `entry points`.
-
-Other than that, all the metadata should live in your main file, just like
-the example below.
-
-## Metadata Example
-
-The following should be placed in your project module's __init__.py file:
-::
-    __author__ = "Ivan Busquets"
-    __author_email__ = "ivanbusquets@gmail.com"
-    __copyright__ = "Copyright 2011, Ivan Busquets"
-    __credits__ = ["Ivan Busquets", "Sean Wallitsch", ]
-    __license__ = "MIT"
-    __version__ = "1.2"
-    __maintainer__ = "Sean Wallitsch"
-    __maintainer_email__ = "sean@grenadehop.com"
-    __module_name__ = "animatedSnap3D"
-    __short_desc__ = "An extension to Nuke's 'snap' options for animated verts"
-    __status__ = "Development"
-    __url__ = 'http://github.com/ThoriumGroup/animatedSnap3D'
-
-Note: At this time `credits` is unused.
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 """
+
 # ==============================================================================
 # IMPORTS
 # ==============================================================================
@@ -190,8 +154,7 @@ setup(
     maintainer=metadata.get('maintainer', 'Michael Kessler'),
     maintainer_email=metadata.get('maintainer_email', 'mike@toadgrass.com'),
 
-    # Choose your license
-    license=metadata.get('license', 'MIT'),
+    license=metadata.get('license', 'Simplified BSD'),
 
     classifiers=[
         # How mature is this project? Common values are
@@ -205,7 +168,7 @@ setup(
         'Topic :: Software Development :: Libraries :: Python Modules',
 
         # Pick your license as you wish (should match "license" above)
-        'License :: OSI Approved :: MIT License',
+        'License :: OSI Approved :: BSD License',
 
         # Specify the Python versions you support here. In particular, ensure
         # that you indicate whether you support Python 2, Python 3 or both.
