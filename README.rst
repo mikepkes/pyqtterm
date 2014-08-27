@@ -27,23 +27,26 @@ Planned Functionality
 
 Installation
 ------------
-```
-python setup.py build
-python setup.py install
-```
+
+::
+
+ python setup.py build
+ python setup.py install
+
 
 Usage
 -----
 
-```
-    from PySide import QtGui
-    import qtterm
-    import sys
-    app = QtGui.QApplication(sys.argv)
-    w = qtterm.QtTermWidget()
-    w.show()
-    app.exec_()
-```
+.. code:: python
+
+ from PySide import QtGui
+ import qtterm
+ import sys
+ app = QtGui.QApplication(sys.argv)
+ w = qtterm.QtTermWidget()
+ w.show()
+ app.exec_()
+
 
 License
 -------
